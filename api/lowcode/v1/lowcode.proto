@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package lowcode.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "lowcode-mysql/api/lowcode/v1;v1";
+option java_multiple_files = true;
+option java_package = "dev.kratos.api.lowcode.v1";
+option java_outer_classname = "LowcodeProtoV1";
+
+service Rows {
+  rpc RowsGet (RowsGetRequest) returns (RowsGetReply) {
+    option (google.api.http) = {
+      get: "/rows/{table}"
+    };
+  }
+}
+
+message RowsGetRequest {
+  string table = 1;
+  string columns = 2;
+}
+
+message RowsGetReply {
+  repeated google.protobuf.Struct rows = 1;
+}

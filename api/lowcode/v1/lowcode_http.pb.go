@@ -17,54 +17,54 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-type GreeterHTTPServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+type RowsHTTPServer interface {
+	RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error)
 }
 
-func RegisterGreeterHTTPServer(s *http.Server, srv GreeterHTTPServer) {
+func RegisterRowsHTTPServer(s *http.Server, srv RowsHTTPServer) {
 	r := s.Route("/")
-	r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
+	r.GET("/rows/{table}", _Rows_RowsGet0_HTTP_Handler(srv))
 }
 
-func _Greeter_SayHello0_HTTP_Handler(srv GreeterHTTPServer) func(ctx http.Context) error {
+func _Rows_RowsGet0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in HelloRequest
+		var in RowsGetRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, "/helloworld.v1.Greeter/SayHello")
+		http.SetOperation(ctx, "/lowcode.v1.Rows/RowsGet")
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SayHello(ctx, req.(*HelloRequest))
+			return srv.RowsGet(ctx, req.(*RowsGetRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*HelloReply)
+		reply := out.(*RowsGetReply)
 		return ctx.Result(200, reply)
 	}
 }
 
-type GreeterHTTPClient interface {
-	SayHello(ctx context.Context, req *HelloRequest, opts ...http.CallOption) (rsp *HelloReply, err error)
+type RowsHTTPClient interface {
+	RowsGet(ctx context.Context, req *RowsGetRequest, opts ...http.CallOption) (rsp *RowsGetReply, err error)
 }
 
-type GreeterHTTPClientImpl struct {
+type RowsHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewGreeterHTTPClient(client *http.Client) GreeterHTTPClient {
-	return &GreeterHTTPClientImpl{client}
+func NewRowsHTTPClient(client *http.Client) RowsHTTPClient {
+	return &RowsHTTPClientImpl{client}
 }
 
-func (c *GreeterHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest, opts ...http.CallOption) (*HelloReply, error) {
-	var out HelloReply
-	pattern := "/helloworld/{name}"
+func (c *RowsHTTPClientImpl) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...http.CallOption) (*RowsGetReply, error) {
+	var out RowsGetReply
+	pattern := "/rows/{table}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/helloworld.v1.Greeter/SayHello"))
+	opts = append(opts, http.Operation("/lowcode.v1.Rows/RowsGet"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

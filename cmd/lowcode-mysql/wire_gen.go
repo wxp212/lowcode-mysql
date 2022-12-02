@@ -7,14 +7,17 @@
 package main
 
 import (
+	"github.com/go-kratos/kratos/v2"
+	"github.com/go-kratos/kratos/v2/log"
 	"lowcode-mysql/internal/biz"
 	"lowcode-mysql/internal/conf"
 	"lowcode-mysql/internal/data"
 	"lowcode-mysql/internal/server"
 	"lowcode-mysql/internal/service"
+)
 
-	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
+import (
+	_ "go.uber.org/automaxprocs"
 )
 
 // Injectors from wire.go:
@@ -25,11 +28,11 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	greeterService := service.NewGreeterService(greeterUsecase)
-	grpcServer := server.NewGRPCServer(confServer, greeterService, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, logger)
+	rowsRepo := data.NewRowsRepo(dataData, logger)
+	rowsUsecase := biz.NewRowsUsecase(rowsRepo, logger)
+	rowsService := service.NewRowsService(rowsUsecase)
+	grpcServer := server.NewGRPCServer(confServer, rowsService, logger)
+	httpServer := server.NewHTTPServer(confServer, rowsService, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
 		cleanup()
