@@ -3,7 +3,6 @@ module lowcode-mysql
 go 1.17
 
 require (
-	github.com/Jeffail/gabs/v2 v2.6.1
 	github.com/go-kratos/kratos/v2 v2.4.1
 	github.com/gogap/dbstruct v0.0.0-20181221075932-a191abc2af7c
 	github.com/google/wire v0.5.0
@@ -29,6 +28,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
 	go.opentelemetry.io/otel v1.7.0 // indirect
 	go.opentelemetry.io/otel/trace v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect

@@ -21,6 +21,7 @@ service Rows {
 message RowsGetRequest {
   string table = 1;
   string columns = 2;
+  string where = 3;
 }
 
 message RowsGetReply {

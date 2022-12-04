@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 // ProviderSet is data providers.
@@ -29,7 +30,9 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		log.NewHelper(logger).Fatal(err)
 	}
 
-	gormdb, err := gorm.Open(mysql.Open(ds.Options.DSN), &gorm.Config{})
+	gormdb, err := gorm.Open(mysql.Open(ds.Options.DSN), &gorm.Config{
+		Logger: gormlogger.Default.LogMode(gormlogger.Info),
+	})
 	if err != nil {
 		log.NewHelper(logger).Fatal(err)
 	}
