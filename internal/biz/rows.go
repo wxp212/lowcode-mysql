@@ -18,6 +18,10 @@ func NewRowsUsecase(repo *data.RowsRepo, logger log.Logger) *RowsUsecase {
 	return &RowsUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
+func (uc *RowsUsecase) RowsCreate(ctx context.Context, req *v1.RowsCreateRequest) (*v1.RowsCreateReply, error) {
+	return uc.repo.RowsCreate(ctx, req)
+}
+
 func (uc *RowsUsecase) RowsGet(ctx context.Context, req *v1.RowsGetRequest) (*v1.RowsGetReply, error) {
 	return uc.repo.RowsGet(ctx, req)
 }

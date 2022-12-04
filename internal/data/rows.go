@@ -48,6 +48,53 @@ func NewRowsRepo(data *Data, logger log.Logger) *RowsRepo {
 	}
 }
 
+func (r *RowsRepo) RowsCreate(ctx context.Context, req *v1.RowsCreateRequest) (*v1.RowsCreateReply, error) {
+	dbTable, err := r.data.ds.Describe(req.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &v1.RowsCreateReply{}
+
+	tx := r.data.gormdb.Begin()
+	defer tx.Rollback()
+
+	for _, row := range req.Rows {
+		st, err := dbTable.NewStruct()
+		if err != nil {
+			return nil, err
+		}
+
+		row_json, err := row.MarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(row_json, st)
+		if err != nil {
+			return nil, err
+		}
+
+		err = tx.Table(req.Table).Create(st).Error
+		if err != nil {
+			return nil, err
+		}
+
+		result_json, err := json.Marshal(st)
+		if err != nil {
+			return nil, err
+		}
+		result := &structpb.Struct{}
+		err = protojson.Unmarshal(result_json, result)
+		if err != nil {
+			return nil, err
+		}
+		reply.Rows = append(reply.Rows, result)
+	}
+
+	tx.Commit()
+	return reply, nil
+}
+
 /*
  * TODO: select Columns
  * TODO: 防撞库?

@@ -1,7 +1,9 @@
 package data
 
 import (
+	"fmt"
 	"lowcode-mysql/internal/conf"
+	"reflect"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/gogap/dbstruct"
@@ -25,6 +27,7 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	ds, err := dbstruct.New(
 		dbstruct.DataSource(c.Database.Driver, c.Database.Source),
 		dbstruct.CreateTabelDSN(c.Database.Source),
+		dbstruct.Tagger(dbstructTagger),
 	)
 	if err != nil {
 		log.NewHelper(logger).Fatal(err)
@@ -44,4 +47,8 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		ds:     ds,
 		gormdb: gormdb,
 	}, cleanup, nil
+}
+
+func dbstructTagger(tableName string, fieldName string) reflect.StructTag {
+	return reflect.StructTag(fmt.Sprintf(`json:"%s,omitempty"`, fieldName))
 }

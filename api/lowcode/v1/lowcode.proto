@@ -11,11 +11,27 @@ option java_package = "dev.kratos.api.lowcode.v1";
 option java_outer_classname = "LowcodeProtoV1";
 
 service Rows {
+  rpc RowsCreate (RowsCreateRequest) returns (RowsCreateReply) {
+    option (google.api.http) = {
+      post: "/rows/{table}"
+      body: "*"
+    };
+  }
+
   rpc RowsGet (RowsGetRequest) returns (RowsGetReply) {
     option (google.api.http) = {
       get: "/rows/{table}"
     };
   }
+}
+
+message RowsCreateRequest {
+  string table = 1;
+  repeated google.protobuf.Struct rows = 2;
+}
+
+message RowsCreateReply {
+  repeated google.protobuf.Struct rows = 1;
 }
 
 message RowsGetRequest {
@@ -27,3 +43,4 @@ message RowsGetRequest {
 message RowsGetReply {
   repeated google.protobuf.Struct rows = 1;
 }
+

@@ -18,12 +18,36 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 type RowsHTTPServer interface {
+	RowsCreate(context.Context, *RowsCreateRequest) (*RowsCreateReply, error)
 	RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error)
 }
 
 func RegisterRowsHTTPServer(s *http.Server, srv RowsHTTPServer) {
 	r := s.Route("/")
+	r.POST("/rows/{table}", _Rows_RowsCreate0_HTTP_Handler(srv))
 	r.GET("/rows/{table}", _Rows_RowsGet0_HTTP_Handler(srv))
+}
+
+func _Rows_RowsCreate0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RowsCreateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/lowcode.v1.Rows/RowsCreate")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RowsCreate(ctx, req.(*RowsCreateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RowsCreateReply)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _Rows_RowsGet0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
@@ -49,6 +73,7 @@ func _Rows_RowsGet0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) erro
 }
 
 type RowsHTTPClient interface {
+	RowsCreate(ctx context.Context, req *RowsCreateRequest, opts ...http.CallOption) (rsp *RowsCreateReply, err error)
 	RowsGet(ctx context.Context, req *RowsGetRequest, opts ...http.CallOption) (rsp *RowsGetReply, err error)
 }
 
@@ -58,6 +83,19 @@ type RowsHTTPClientImpl struct {
 
 func NewRowsHTTPClient(client *http.Client) RowsHTTPClient {
 	return &RowsHTTPClientImpl{client}
+}
+
+func (c *RowsHTTPClientImpl) RowsCreate(ctx context.Context, in *RowsCreateRequest, opts ...http.CallOption) (*RowsCreateReply, error) {
+	var out RowsCreateReply
+	pattern := "/rows/{table}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/lowcode.v1.Rows/RowsCreate"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *RowsHTTPClientImpl) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...http.CallOption) (*RowsGetReply, error) {

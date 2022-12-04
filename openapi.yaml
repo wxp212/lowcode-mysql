@@ -51,6 +51,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lowcode.v1.RowsGetReply'
+        post:
+            tags:
+                - Rows
+            operationId: Rows_RowsCreate
+            parameters:
+                - name: table
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lowcode.v1.RowsCreateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lowcode.v1.RowsCreateReply'
 components:
     schemas:
         helloworld.v1.HelloReply:
@@ -59,6 +82,22 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        lowcode.v1.RowsCreateReply:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+        lowcode.v1.RowsCreateRequest:
+            type: object
+            properties:
+                table:
+                    type: string
+                rows:
+                    type: array
+                    items:
+                        type: object
         lowcode.v1.RowsGetReply:
             type: object
             properties:

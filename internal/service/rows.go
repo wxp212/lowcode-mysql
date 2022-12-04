@@ -17,6 +17,10 @@ func NewRowsService(uc *biz.RowsUsecase) *RowsService {
 	return &RowsService{uc: uc}
 }
 
+func (s *RowsService) RowsCreate(ctx context.Context, req *pb.RowsCreateRequest) (*pb.RowsCreateReply, error) {
+	return s.uc.RowsCreate(ctx, req)
+}
+
 func (s *RowsService) RowsGet(ctx context.Context, req *pb.RowsGetRequest) (*pb.RowsGetReply, error) {
 	return s.uc.RowsGet(ctx, req)
 }

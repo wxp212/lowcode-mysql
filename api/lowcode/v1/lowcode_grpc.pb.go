@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RowsClient interface {
+	RowsCreate(ctx context.Context, in *RowsCreateRequest, opts ...grpc.CallOption) (*RowsCreateReply, error)
 	RowsGet(ctx context.Context, in *RowsGetRequest, opts ...grpc.CallOption) (*RowsGetReply, error)
 }
 
@@ -31,6 +32,15 @@ type rowsClient struct {
 
 func NewRowsClient(cc grpc.ClientConnInterface) RowsClient {
 	return &rowsClient{cc}
+}
+
+func (c *rowsClient) RowsCreate(ctx context.Context, in *RowsCreateRequest, opts ...grpc.CallOption) (*RowsCreateReply, error) {
+	out := new(RowsCreateReply)
+	err := c.cc.Invoke(ctx, "/lowcode.v1.Rows/RowsCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rowsClient) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...grpc.CallOption) (*RowsGetReply, error) {
@@ -46,6 +56,7 @@ func (c *rowsClient) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...gr
 // All implementations must embed UnimplementedRowsServer
 // for forward compatibility
 type RowsServer interface {
+	RowsCreate(context.Context, *RowsCreateRequest) (*RowsCreateReply, error)
 	RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error)
 	mustEmbedUnimplementedRowsServer()
 }
@@ -54,6 +65,9 @@ type RowsServer interface {
 type UnimplementedRowsServer struct {
 }
 
+func (UnimplementedRowsServer) RowsCreate(context.Context, *RowsCreateRequest) (*RowsCreateReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RowsCreate not implemented")
+}
 func (UnimplementedRowsServer) RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RowsGet not implemented")
 }
@@ -68,6 +82,24 @@ type UnsafeRowsServer interface {
 
 func RegisterRowsServer(s grpc.ServiceRegistrar, srv RowsServer) {
 	s.RegisterService(&Rows_ServiceDesc, srv)
+}
+
+func _Rows_RowsCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RowsCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RowsServer).RowsCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lowcode.v1.Rows/RowsCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RowsServer).RowsCreate(ctx, req.(*RowsCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Rows_RowsGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -95,6 +127,10 @@ var Rows_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "lowcode.v1.Rows",
 	HandlerType: (*RowsServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "RowsCreate",
+			Handler:    _Rows_RowsCreate_Handler,
+		},
 		{
 			MethodName: "RowsGet",
 			Handler:    _Rows_RowsGet_Handler,
