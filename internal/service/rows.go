@@ -24,3 +24,11 @@ func (s *RowsService) RowsCreate(ctx context.Context, req *pb.RowsCreateRequest)
 func (s *RowsService) RowsGet(ctx context.Context, req *pb.RowsGetRequest) (*pb.RowsGetReply, error) {
 	return s.uc.RowsGet(ctx, req)
 }
+
+func (s *RowsService) RowsUpdate(ctx context.Context, req *pb.RowsUpdateRequest) (*pb.RowsUpdateReply, error) {
+	return s.uc.RowsUpdate(ctx, req)
+}
+
+func (s *RowsService) RowsDelete(ctx context.Context, req *pb.RowsDeleteRequest) (*pb.RowsDeleteReply, error) {
+	return s.uc.RowsDelete(ctx, req)
+}

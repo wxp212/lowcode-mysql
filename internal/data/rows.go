@@ -291,3 +291,59 @@ func (r *RowsRepo) RowsGet(ctx context.Context, req *v1.RowsGetRequest) (*v1.Row
 	}
 	return &reply, nil
 }
+
+func (r *RowsRepo) RowsUpdate(ctx context.Context, req *v1.RowsUpdateRequest) (*v1.RowsUpdateReply, error) {
+	dbTable, err := r.data.ds.Describe(req.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := &v1.RowsUpdateReply{}
+
+	tx := r.data.gormdb.Begin()
+	defer tx.Rollback()
+
+	for _, row := range req.Rows {
+		st, err := dbTable.NewStruct()
+		if err != nil {
+			return nil, err
+		}
+
+		row_json, err := row.MarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(row_json, st)
+		if err != nil {
+			return nil, err
+		}
+
+		err = tx.Table(req.Table).Save(st).Error
+		if err != nil {
+			return nil, err
+		}
+
+		result_json, err := json.Marshal(st)
+		if err != nil {
+			return nil, err
+		}
+		result := &structpb.Struct{}
+		err = protojson.Unmarshal(result_json, result)
+		if err != nil {
+			return nil, err
+		}
+		reply.Rows = append(reply.Rows, result)
+	}
+
+	tx.Commit()
+	return reply, nil
+}
+
+func (r *RowsRepo) RowsDelete(ctx context.Context, req *v1.RowsDeleteRequest) (*v1.RowsDeleteReply, error) {
+	err := r.data.gormdb.Table(req.Table).Where(req.Where).Delete(nil).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.RowsDeleteReply{}, nil
+}

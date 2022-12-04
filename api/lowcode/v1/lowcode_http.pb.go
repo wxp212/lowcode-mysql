@@ -19,13 +19,17 @@ const _ = http.SupportPackageIsVersion1
 
 type RowsHTTPServer interface {
 	RowsCreate(context.Context, *RowsCreateRequest) (*RowsCreateReply, error)
+	RowsDelete(context.Context, *RowsDeleteRequest) (*RowsDeleteReply, error)
 	RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error)
+	RowsUpdate(context.Context, *RowsUpdateRequest) (*RowsUpdateReply, error)
 }
 
 func RegisterRowsHTTPServer(s *http.Server, srv RowsHTTPServer) {
 	r := s.Route("/")
 	r.POST("/rows/{table}", _Rows_RowsCreate0_HTTP_Handler(srv))
 	r.GET("/rows/{table}", _Rows_RowsGet0_HTTP_Handler(srv))
+	r.PATCH("/rows/{table}", _Rows_RowsUpdate0_HTTP_Handler(srv))
+	r.DELETE("/rows/{table}", _Rows_RowsDelete0_HTTP_Handler(srv))
 }
 
 func _Rows_RowsCreate0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
@@ -72,9 +76,55 @@ func _Rows_RowsGet0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) erro
 	}
 }
 
+func _Rows_RowsUpdate0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RowsUpdateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/lowcode.v1.Rows/RowsUpdate")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RowsUpdate(ctx, req.(*RowsUpdateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RowsUpdateReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Rows_RowsDelete0_HTTP_Handler(srv RowsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RowsDeleteRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, "/lowcode.v1.Rows/RowsDelete")
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RowsDelete(ctx, req.(*RowsDeleteRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RowsDeleteReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type RowsHTTPClient interface {
 	RowsCreate(ctx context.Context, req *RowsCreateRequest, opts ...http.CallOption) (rsp *RowsCreateReply, err error)
+	RowsDelete(ctx context.Context, req *RowsDeleteRequest, opts ...http.CallOption) (rsp *RowsDeleteReply, err error)
 	RowsGet(ctx context.Context, req *RowsGetRequest, opts ...http.CallOption) (rsp *RowsGetReply, err error)
+	RowsUpdate(ctx context.Context, req *RowsUpdateRequest, opts ...http.CallOption) (rsp *RowsUpdateReply, err error)
 }
 
 type RowsHTTPClientImpl struct {
@@ -98,6 +148,19 @@ func (c *RowsHTTPClientImpl) RowsCreate(ctx context.Context, in *RowsCreateReque
 	return &out, err
 }
 
+func (c *RowsHTTPClientImpl) RowsDelete(ctx context.Context, in *RowsDeleteRequest, opts ...http.CallOption) (*RowsDeleteReply, error) {
+	var out RowsDeleteReply
+	pattern := "/rows/{table}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation("/lowcode.v1.Rows/RowsDelete"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *RowsHTTPClientImpl) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...http.CallOption) (*RowsGetReply, error) {
 	var out RowsGetReply
 	pattern := "/rows/{table}"
@@ -105,6 +168,19 @@ func (c *RowsHTTPClientImpl) RowsGet(ctx context.Context, in *RowsGetRequest, op
 	opts = append(opts, http.Operation("/lowcode.v1.Rows/RowsGet"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *RowsHTTPClientImpl) RowsUpdate(ctx context.Context, in *RowsUpdateRequest, opts ...http.CallOption) (*RowsUpdateReply, error) {
+	var out RowsUpdateReply
+	pattern := "/rows/{table}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation("/lowcode.v1.Rows/RowsUpdate"))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PATCH", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

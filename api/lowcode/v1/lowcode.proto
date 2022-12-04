@@ -23,6 +23,19 @@ service Rows {
       get: "/rows/{table}"
     };
   }
+
+  rpc RowsUpdate (RowsUpdateRequest) returns (RowsUpdateReply) {
+    option (google.api.http) = {
+      patch: "/rows/{table}"
+      body: "*"
+    };
+  }
+
+  rpc RowsDelete (RowsDeleteRequest) returns (RowsDeleteReply) {
+    option (google.api.http) = {
+      delete: "/rows/{table}"
+    };
+  }
 }
 
 message RowsCreateRequest {
@@ -44,3 +57,19 @@ message RowsGetReply {
   repeated google.protobuf.Struct rows = 1;
 }
 
+message RowsUpdateRequest {
+  string table = 1;
+  repeated google.protobuf.Struct rows = 2;
+}
+
+message RowsUpdateReply {
+  repeated google.protobuf.Struct rows = 1;
+}
+
+message RowsDeleteRequest {
+  string table = 1;
+  string where = 2;
+}
+
+message RowsDeleteReply {
+}

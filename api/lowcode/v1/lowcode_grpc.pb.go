@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type RowsClient interface {
 	RowsCreate(ctx context.Context, in *RowsCreateRequest, opts ...grpc.CallOption) (*RowsCreateReply, error)
 	RowsGet(ctx context.Context, in *RowsGetRequest, opts ...grpc.CallOption) (*RowsGetReply, error)
+	RowsUpdate(ctx context.Context, in *RowsUpdateRequest, opts ...grpc.CallOption) (*RowsUpdateReply, error)
+	RowsDelete(ctx context.Context, in *RowsDeleteRequest, opts ...grpc.CallOption) (*RowsDeleteReply, error)
 }
 
 type rowsClient struct {
@@ -52,12 +54,32 @@ func (c *rowsClient) RowsGet(ctx context.Context, in *RowsGetRequest, opts ...gr
 	return out, nil
 }
 
+func (c *rowsClient) RowsUpdate(ctx context.Context, in *RowsUpdateRequest, opts ...grpc.CallOption) (*RowsUpdateReply, error) {
+	out := new(RowsUpdateReply)
+	err := c.cc.Invoke(ctx, "/lowcode.v1.Rows/RowsUpdate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rowsClient) RowsDelete(ctx context.Context, in *RowsDeleteRequest, opts ...grpc.CallOption) (*RowsDeleteReply, error) {
+	out := new(RowsDeleteReply)
+	err := c.cc.Invoke(ctx, "/lowcode.v1.Rows/RowsDelete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RowsServer is the server API for Rows service.
 // All implementations must embed UnimplementedRowsServer
 // for forward compatibility
 type RowsServer interface {
 	RowsCreate(context.Context, *RowsCreateRequest) (*RowsCreateReply, error)
 	RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error)
+	RowsUpdate(context.Context, *RowsUpdateRequest) (*RowsUpdateReply, error)
+	RowsDelete(context.Context, *RowsDeleteRequest) (*RowsDeleteReply, error)
 	mustEmbedUnimplementedRowsServer()
 }
 
@@ -70,6 +92,12 @@ func (UnimplementedRowsServer) RowsCreate(context.Context, *RowsCreateRequest) (
 }
 func (UnimplementedRowsServer) RowsGet(context.Context, *RowsGetRequest) (*RowsGetReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RowsGet not implemented")
+}
+func (UnimplementedRowsServer) RowsUpdate(context.Context, *RowsUpdateRequest) (*RowsUpdateReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RowsUpdate not implemented")
+}
+func (UnimplementedRowsServer) RowsDelete(context.Context, *RowsDeleteRequest) (*RowsDeleteReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RowsDelete not implemented")
 }
 func (UnimplementedRowsServer) mustEmbedUnimplementedRowsServer() {}
 
@@ -120,6 +148,42 @@ func _Rows_RowsGet_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Rows_RowsUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RowsUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RowsServer).RowsUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lowcode.v1.Rows/RowsUpdate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RowsServer).RowsUpdate(ctx, req.(*RowsUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rows_RowsDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RowsDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RowsServer).RowsDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/lowcode.v1.Rows/RowsDelete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RowsServer).RowsDelete(ctx, req.(*RowsDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Rows_ServiceDesc is the grpc.ServiceDesc for Rows service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +198,14 @@ var Rows_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RowsGet",
 			Handler:    _Rows_RowsGet_Handler,
+		},
+		{
+			MethodName: "RowsUpdate",
+			Handler:    _Rows_RowsUpdate_Handler,
+		},
+		{
+			MethodName: "RowsDelete",
+			Handler:    _Rows_RowsDelete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

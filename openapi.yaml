@@ -74,6 +74,50 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lowcode.v1.RowsCreateReply'
+        delete:
+            tags:
+                - Rows
+            operationId: Rows_RowsDelete
+            parameters:
+                - name: table
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: where
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lowcode.v1.RowsDeleteReply'
+        patch:
+            tags:
+                - Rows
+            operationId: Rows_RowsUpdate
+            parameters:
+                - name: table
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lowcode.v1.RowsUpdateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lowcode.v1.RowsUpdateReply'
 components:
     schemas:
         helloworld.v1.HelloReply:
@@ -98,9 +142,28 @@ components:
                     type: array
                     items:
                         type: object
+        lowcode.v1.RowsDeleteReply:
+            type: object
+            properties: {}
         lowcode.v1.RowsGetReply:
             type: object
             properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+        lowcode.v1.RowsUpdateReply:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+        lowcode.v1.RowsUpdateRequest:
+            type: object
+            properties:
+                table:
+                    type: string
                 rows:
                     type: array
                     items:

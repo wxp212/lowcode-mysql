@@ -25,3 +25,11 @@ func (uc *RowsUsecase) RowsCreate(ctx context.Context, req *v1.RowsCreateRequest
 func (uc *RowsUsecase) RowsGet(ctx context.Context, req *v1.RowsGetRequest) (*v1.RowsGetReply, error) {
 	return uc.repo.RowsGet(ctx, req)
 }
+
+func (uc *RowsUsecase) RowsUpdate(ctx context.Context, req *v1.RowsUpdateRequest) (*v1.RowsUpdateReply, error) {
+	return uc.repo.RowsUpdate(ctx, req)
+}
+
+func (uc *RowsUsecase) RowsDelete(ctx context.Context, req *v1.RowsDeleteRequest) (*v1.RowsDeleteReply, error) {
+	return uc.repo.RowsDelete(ctx, req)
+}
