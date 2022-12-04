@@ -20,6 +20,7 @@ var ProviderSet = wire.NewSet(NewData, NewRowsRepo)
 type Data struct {
 	ds     *dbstruct.DBStruct
 	gormdb *gorm.DB
+	dbname string
 }
 
 // NewData .
@@ -46,6 +47,7 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	return &Data{
 		ds:     ds,
 		gormdb: gormdb,
+		dbname: c.Database.Dbname,
 	}, cleanup, nil
 }
 

@@ -223,7 +223,7 @@ func (r *RowsRepo) RowsGetLayer(ctx context.Context, curLayer *Layer, lastLayerV
 
 func (r *RowsRepo) RowsGet(ctx context.Context, req *v1.RowsGetRequest) (*v1.RowsGetReply, error) {
 	conditions := &Conditions{
-		DataBase: "test",
+		DataBase: r.data.dbname,
 		Tables:   req.Table,
 		Where:    req.Where,
 	}
